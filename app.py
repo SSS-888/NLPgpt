@@ -1,9 +1,12 @@
-# app.py
 from flask import Flask, render_template, request, flash
-import nlp_utils  # Corrected import statement
+import logging
+import nlp_utils
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Set a secret key for flash messages
+app.secret_key = 'your_secret_key'
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -12,23 +15,25 @@ def index():
         case_text = request.form.get('case')
         top_n = int(request.form.get('top_n', 5))  # Get the value of top_n from the form, default to 5
 
-        if file and case_text:
-            try:
-                file_content = file.read()
-                sentences = nlp_utils.load_and_preprocess(file_content)
-                relevant_sentences = nlp_utils.extract_relevant_sentences(sentences, case_text, top_n)
-                return render_template('result.html', case=case_text, relevant_sentences=relevant_sentences, top_n=top_n)
-            except UnicodeDecodeError:
-                flash("Error decoding the text file. Please ensure it's in a valid format.", "error")
-            except Exception as e:
-                logging.error(f"An error occurred: {e}")
-                flash("An error occurred during processing. Please try again.", "error")
-        else:
+        if not file or not case_text:
             flash("Please upload a file and enter a case text.", "error")
+            return render_template('index.html')
+
+        try:
+            file_content = file.read()
+            sentences = nlp_utils.load_and_preprocess(file_content)
+            relevant_sentences = nlp_utils.extract_relevant_sentences(sentences, case_text, top_n)
+            return render_template('result.html', case=case_text, relevant_sentences=relevant_sentences, top_n=top_n)
+        except UnicodeDecodeError:
+            flash("Error decoding the text file. Please ensure it's in a valid format.", "error")
+        except ValueError:
+            flash("Top N value must be a positive integer.", "error")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            flash("An error occurred during processing. Please try again.", "error")
 
     return render_template('index.html')
 
-# Index page with instructions popup
 @app.context_processor
 def inject_instructions():
     instructions = """
