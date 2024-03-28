@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The NLPgpt</title>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        input[type="file"], textarea, input[type="number"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .instructions {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .instructions-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 600px;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
+        }
+        .instructions-content pre {
+            white-space: pre-wrap;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+        }
+        .close-instructions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The NLPgpt</h1>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".txt" required>
+            <textarea name="case" placeholder="Enter the case..." rows="5" required></textarea>
+            <input type="number" name="top_n" placeholder="Number of top relevant sentences (default: 5)" min="1" value="5">
+            <input type="submit" value="Analyze">
+        </form>
+        <button id="show-instructions"><i class="fas fa-question-circle"></i> Show Instructions</button>
+    </div>
+
+    <div class="instructions" id="instructions-popup">
+        <div class="instructions-content">
+            <span class="close-instructions" id="close-instructions">&times;</span>
+            <pre>{{ instructions }}</pre>
+        </div>
+    </div>
+
+    <script>
+        const instructionsPopup = document.getElementById('instructions-popup');
+        const showInstructionsBtn = document.getElementById('show-instructions');
+        const closeInstructionsBtn = document.getElementById('close-instructions');
+
+        showInstructionsBtn.addEventListener('click', () => {
+            instructionsPopup.style.display = 'flex';
+        });
+
+        closeInstructionsBtn.addEventListener('click', () => {
+            instructionsPopup.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === instructionsPopup) {
+                instructionsPopup.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
